@@ -1,8 +1,5 @@
 import Transaccion from "./classes/Transaccion.js";
 
-// ---------------------------------------------------------------
-// Referencias al DOM
-// ---------------------------------------------------------------
 const form = document.getElementById("form-transaccion");
 const listaTransacciones = document.getElementById("lista-transacciones");
 const resumenCategorias = document.getElementById("resumen-categorias");
@@ -10,9 +7,6 @@ const elIngresos = document.getElementById("ingresos-totales");
 const elGastos = document.getElementById("gastos-totales");
 const elBalance = document.getElementById("balance-neto");
 
-// ---------------------------------------------------------------
-// Utilidades (Pesos Argentinos)
-// ---------------------------------------------------------------
 function formatearMoneda(valor) {
     return valor.toLocaleString("es-AR", {
         style: "currency",
@@ -20,9 +14,6 @@ function formatearMoneda(valor) {
     });
 }
 
-// ---------------------------------------------------------------
-// CÁLCULOS
-// ---------------------------------------------------------------
 function calcularTotales() {
     let ingresos = 0;
     let gastos = 0;
@@ -50,9 +41,6 @@ function agruparPorCategoria() {
     return grupos;
 }
 
-// ---------------------------------------------------------------
-// ACTUALIZACIÓN DEL DOM
-// ---------------------------------------------------------------
 function actualizarPanelBalance() {
     const { ingresos, gastos, balance } = calcularTotales();
 
@@ -60,7 +48,6 @@ function actualizarPanelBalance() {
     elGastos.textContent = formatearMoneda(gastos);
     elBalance.textContent = formatearMoneda(balance);
 
-    // El balance se pone rojo si es negativo
     elBalance.classList.toggle("text-red-600", balance < 0);
     elBalance.classList.toggle("text-emerald-600", balance >= 0);
 }
@@ -118,16 +105,12 @@ function actualizarFilaVacia() {
     }
 }
 
-// Función central para actualizar la interfaz gráfica
 function actualizarResumenes() {
     actualizarPanelBalance();
     actualizarResumenCategorias();
     actualizarFilaVacia();
 }
 
-// ---------------------------------------------------------------
-// INYECCIÓN DINÁMICA DE FILAS
-// ---------------------------------------------------------------
 function crearCelda(clases) {
     const td = document.createElement("td");
     td.className = clases;
@@ -141,11 +124,9 @@ function agregarFilaAlHistorial(transaccion) {
     tr.className = "hover:bg-slate-50 transition";
     tr.dataset.id = transaccion.id;
 
-    // Descripción
     const tdDescripcion = crearCelda("py-3.5 px-4 font-medium text-slate-800");
     tdDescripcion.textContent = transaccion.descripcion;
 
-    // Categoría
     const tdCategoria = crearCelda("py-3.5 px-4");
     const badgeCategoria = document.createElement("span");
     badgeCategoria.className =
@@ -153,7 +134,6 @@ function agregarFilaAlHistorial(transaccion) {
     badgeCategoria.textContent = transaccion.categoria;
     tdCategoria.appendChild(badgeCategoria);
 
-    // Tipo (verde = ingreso / rojo = gasto)
     const tdTipo = crearCelda("py-3.5 px-4");
     const badgeTipo = document.createElement("span");
     badgeTipo.className =
@@ -162,14 +142,12 @@ function agregarFilaAlHistorial(transaccion) {
     badgeTipo.textContent = esIngreso ? "Ingreso" : "Gasto";
     tdTipo.appendChild(badgeTipo);
 
-    // Monto
     const tdMonto = crearCelda(
         "py-3.5 px-4 text-right font-semibold " +
         (esIngreso ? "text-emerald-800" : "text-red-600")
     );
     tdMonto.textContent = (esIngreso ? "+" : "-") + formatearMoneda(transaccion.monto);
 
-    // Botón eliminar
     const tdAcciones = crearCelda("py-3.5 px-4 text-center");
     const btnEliminar = document.createElement("button");
     btnEliminar.type = "button";
@@ -180,11 +158,10 @@ function agregarFilaAlHistorial(transaccion) {
     tdAcciones.appendChild(btnEliminar);
 
     tr.append(tdDescripcion, tdCategoria, tdTipo, tdMonto, tdAcciones);
-    // prepend: la fila nueva va arriba (más recientes primero)
     listaTransacciones.prepend(tr);
 }
 
-// Renderiza todas las transacciones que ya vinieron cargadas del LocalStorage
+
 function renderizarHistorialCompleto() {
     listaTransacciones.replaceChildren();
     Transaccion.historial.forEach((t) => {
@@ -192,23 +169,16 @@ function renderizarHistorialCompleto() {
     });
 }
 
-// ---------------------------------------------------------------
-// ELIMINACIÓN
-// ---------------------------------------------------------------
+
 function eliminarTransaccion(id) {
-    // Llamamos al método estático que elimina del array y actualiza el localStorage
     Transaccion.eliminar(id);
 
-    // Sacamos la fila del DOM
     const fila = listaTransacciones.querySelector(`tr[data-id="${id}"]`);
     if (fila) fila.remove();
 
     actualizarResumenes();
 }
 
-// ---------------------------------------------------------------
-// EVENTO SUBMIT DEL FORMULARIO
-// ---------------------------------------------------------------
 form.addEventListener("submit", (evento) => {
     evento.preventDefault();
 
@@ -230,8 +200,5 @@ form.addEventListener("submit", (evento) => {
     document.getElementById("descripcion").focus();
 });
 
-// ---------------------------------------------------------------
-// INICIALIZACIÓN DE LA APLICACIÓN
-// ---------------------------------------------------------------
 renderizarHistorialCompleto();
 actualizarResumenes();

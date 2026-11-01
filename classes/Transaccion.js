@@ -7,7 +7,6 @@ export default class Transaccion {
 
     static historial = [];
 
-    // Bloque estático: se ejecuta automáticamente al importar la clase
     static {
         this.#cargarDesdeLocalStorage();
     }
@@ -38,7 +37,7 @@ export default class Transaccion {
         Transaccion.#guardarEnLocalStorage();
     }
 
-    // Métodos privados para el manejo del LocalStorage
+    // localstorage:
     static #guardarEnLocalStorage() {
         localStorage.setItem("gestor_finanzas_historial", JSON.stringify(Transaccion.historial));
     }
