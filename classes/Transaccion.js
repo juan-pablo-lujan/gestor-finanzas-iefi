@@ -4,6 +4,7 @@ export default class Transaccion {
     descripcion;
     monto;
     categoria;
+    fecha;
 
     static historial = [];
 
@@ -11,16 +12,17 @@ export default class Transaccion {
         this.#cargarDesdeLocalStorage();
     }
 
-    constructor(id, tipo, descripcion, monto, categoria) {
+    constructor(id, tipo, descripcion, monto, categoria, fecha) {
         this.id = id;
         this.tipo = tipo;
         this.descripcion = descripcion;
         this.monto = monto;
         this.categoria = categoria;
+        this.fecha = fecha;
     }
 
-    static crear({ id, tipo, descripcion, monto, categoria }) {
-        const transaccion = new this(id, tipo, descripcion, monto, categoria);
+    static crear({ id, tipo, descripcion, monto, categoria, fecha }) {
+        const transaccion = new this(id, tipo, descripcion, monto, categoria, fecha);
         Transaccion.agregar(transaccion);
         return transaccion;
     }
@@ -47,7 +49,15 @@ export default class Transaccion {
         if (datosGuardados === null) {
             Transaccion.historial = [];
         } else {
-            Transaccion.historial = JSON.parse(datosGuardados);
+            const datosPlanos = JSON.parse(datosGuardados);
+            Transaccion.historial = datosPlanos.map((t) => new Transaccion(
+                t.id,
+                t.tipo,
+                t.descripcion,
+                t.monto,
+                t.categoria,
+                t.fecha
+            ));
         }
     }
 }
